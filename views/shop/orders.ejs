@@ -1,0 +1,25 @@
+<%-include('../partials/header.ejs')%>
+    <link rel="stylesheet" href="/css/orders.css">
+    </head>
+    <body>
+        <%-include('../partials/navigation.ejs')%>
+
+        <main>
+            <%if(orders.length<=0){%>
+                <h1>Not Yet Ordered.!</h1>
+            <%}else{%>
+                <ul class="orders">
+                    <%orders.forEach(order=>{%>
+                        <li class="orders__item">
+                            <h1>#<%=order._id%></h1>
+                            <ul class="orders__products">
+                                <%order.products.forEach(item=>{%>
+                                    <li class="orders__products-item"><%=item.product.title%>(<%=item.quantity%>)</li>
+                                <%})%>
+                            </ul>
+                        </li>
+                    <%})%>
+                </ul>
+            <%}%>
+        </main>
+<%-include('../partials/footer.ejs')%>

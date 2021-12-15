@@ -1,0 +1,21 @@
+<%-include('../partials/header.ejs')%>
+    <link rel="stylesheet" href="/css/product.css">
+</head>
+<body>
+    <%-include('../partials/navigation.ejs')%>
+
+    <main class="centered">
+            <h1><%=prods.title%></h1>
+            <hr>
+            <div>
+                <img src="<%=prods.imageUrl%>" width="200px" height="250px" alt="<%=prods.title%>">
+            </div>
+            <h2>$<%=prods.price%></h2>
+            <p><%=prods.description%></p>
+            <div class="card__actions">
+            <%if(isAuthenticate){%>
+                <%-include('../partials/add-to-cart.ejs',{p:prods})%>
+            <%}%>
+            </div>
+    </main>
+<%-include('../partials/footer.ejs')%>
