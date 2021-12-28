@@ -31,7 +31,6 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-
 exports.getLogin = (req,res,next)=>{
     let message = req.flash('error');
     if(message.length>0){
@@ -123,15 +122,23 @@ exports.postLogin = (req,res,next)=>{
                     },
                     validationErrors: []
             });
+        }).catch(err=>{
+            console.log(err);
+            res.redirect('/login');
         })
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+        const error = new Error(err)
+        error.httpStatusCode = 500;
+        return next(error);
+      });
 }
 
 exports.postLogout = (req,res,next)=>{
     req.session.destroy((err)=>{
         console.log(err)
         res.redirect('/')
+        // console.log(req.session.isLoggedIn)
     })
 }
 
@@ -153,13 +160,13 @@ exports.postSignup = (req,res,next)=>{
             validationErrors: error.array()
         })
     }
-    bcrypt.hash(password,12)
-        .then(bcryptPass=>{
-            const user = new User({
-                email: email,
-                password: bcryptPass,
-                cart: {items:[]}
-            });
+    return bcrypt.hash(password,12)
+            .then(bcryptPass=>{
+                const user = new User({
+                    email: email,
+                    password: bcryptPass,
+                    cart: {items:[]}
+                });
             return user.save();    
         })
         .then(result=>{
@@ -173,8 +180,10 @@ exports.postSignup = (req,res,next)=>{
             })
         })    
         .catch(err=>{
-            console.log(err)
-        })
+            const error = new Error(err)
+            error.httpStatusCode = 500;
+            return next(error);
+          })
         
 }
 
@@ -206,7 +215,7 @@ exports.postReset = (req,res,next)=>{
                     return res.redirect('/reset')
                 }
                 user.resetToken = token;
-                user.resetTokenExpiration = Date.now() + 360000;
+                user.resetTokenExpiration = Date.now() + 300000;
                 return user.save()
             })
             .then(result=>{
@@ -219,7 +228,11 @@ exports.postReset = (req,res,next)=>{
                             <p>Click This <a href="http://localhost:3000/reset/${token}">link</a> to set a new password</p>`
                 })
             })
-            .catch(err=>console.log(err))
+            .catch(err=>{
+                const error = new Error(err)
+                error.httpStatusCode = 500;
+                return next(error);
+              })
     })
 }
 
@@ -241,7 +254,11 @@ exports.getNewPassword = (req,res,next)=>{
                 passwordToken: token
             })
         })
-        .catch(err=>console.log(err));
+        .catch(err=>{
+            const error = new Error(err)
+            error.httpStatusCode = 500;
+            return next(error);
+          });
 
 }
 
@@ -277,5 +294,9 @@ exports.postNewPassword = (req,res,next)=>{
             //     html: '<h1>Password Reset Seccessfully</h1>'
             // })
         })
-        .catch(err=>console.log(err))
+        .catch(err=>{
+            const error = new Error(err)
+            error.httpStatusCode = 500;
+            return next(error);
+          })
 }

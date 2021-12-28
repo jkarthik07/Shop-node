@@ -1,5 +1,7 @@
 const Product = require('../models/product')
 const Order = require('../models/order')
+const fs = require('fs')
+const path = require('path')
 // const mongoose = require('mongoose')
 // const Cart = require('../models/cart')
 
@@ -12,7 +14,11 @@ exports.getIndex=(req,res,next)=>{
         path: '/'
       });
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    })
 }
 
 exports.productList=(req,res,next)=>{
@@ -24,7 +30,11 @@ exports.productList=(req,res,next)=>{
         path: '/products'
       });
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    })
 }
 
 
@@ -38,7 +48,11 @@ exports.getProdDetails=(req,res,next)=>{
           path: '/products'
         });
       })
-      .catch(err=>console.log(err))
+      .catch(err=>{
+        const error = new Error(err)
+        error.httpStatusCode = 500;
+        return next(error);
+      })
 }
 
 
@@ -67,7 +81,11 @@ exports.postCart=(req,res,next)=>{
         console.log(result)
         res.redirect('/cart')
       })
-      .catch(err=>console.log(err))
+      .catch(err=>{
+        const error = new Error(err)
+        error.httpStatusCode = 500;
+        return next(error);
+      })
 }
 
 exports.orders=(req,res,next)=>{
@@ -79,7 +97,11 @@ exports.orders=(req,res,next)=>{
           orders: orders
         })
       })
-      .catch(err=>console.log(err));
+      .catch(err=>{
+        const error = new Error(err)
+        error.httpStatusCode = 500;
+        return next(error);
+      })
 }
 
 exports.postOrders=(req,res,next)=>{
@@ -106,7 +128,11 @@ exports.postOrders=(req,res,next)=>{
     .then(result=>{
       res.redirect('/orders');
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    })
 }
 
 // exports.checkout=(req,res,next)=>{
@@ -123,11 +149,29 @@ exports.postCartDelete = (req,res,next)=>{
     .then(result =>{
       res.redirect('/cart');
     })
-    .catch(err=>console.log(err))
+    .catch(err=>{
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    })
     // ,(err)=>{
     //   if(!err){
     //     res.redirect('/cart');
     //   } else{
     //     console.log(err)
     //   }
+}
+
+exports.getInvoice = (req,res,next)=>{
+  const orderId = req.params.orderId
+  const invoiceName = 'invoice-'+ orderId +'.pdf';
+  const invoicePath = path.join('data','invoices',invoiceName)
+  fs.readFile(invoicePath,(err,data)=>{
+    if(err){
+      return next(err);
+    }
+    res.setHeader('Content-Type','application/pdf')
+    res.setHeader('Content-Disposition','inline; filename="'+ invoiceName+'"')
+    res.send(data)
+  })
 }

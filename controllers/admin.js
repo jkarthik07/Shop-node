@@ -1,5 +1,6 @@
 const Product = require('../models/product')
 const {validationResult} = require('express-validator/check')
+const mongoose = require('mongoose')
 
 exports.getProducts=(req,res,next)=>{
     res.render('admin/edit-products',
@@ -13,23 +14,36 @@ exports.getProducts=(req,res,next)=>{
     });
 }
 
-
 exports.postProducts=(req,res,next)=>{
     const title = req.body.title;
-    const imageUrl = req.body.imageUrl;
+    const image = req.file;
     const price = req.body.price;
     const description = req.body.description;
+    if(!image){
+      return res.status(422).render('admin/edit-products',
+        {pageTitle:'Add Products',
+        path:'/admin/add-products',
+        editing : false,
+        hasError: true,
+        product: {
+          title:title,
+          price: price,
+          description: description
+        },
+        errorMessage: "Attached file is not an image",
+        validationErrors: []
+      });
+    }
     const errors = validationResult(req)
 
     if(!errors.isEmpty()){
       return res.status(422).render('admin/edit-products',
         {pageTitle:'Add Products',
-        path:'/admin/edit-products',
+        path:'/admin/add-products',
         editing : false,
         hasError: true,
         product: {
           title:title,
-          imageUrl: imageUrl,
           price: price,
           description: description
         },
@@ -37,6 +51,8 @@ exports.postProducts=(req,res,next)=>{
         validationErrors: errors.array()
       });
     }
+
+    const imageUrl = image.path;
 
     const product = new Product({
       title: title, 
@@ -51,7 +67,31 @@ exports.postProducts=(req,res,next)=>{
         console.log("Table created and product added successfully");
         res.redirect('/admin/products');
       })
-      .catch(err=>console.log(err))
+      .catch(err=>{
+        //For MongoDb error handling (We render '/500' page)
+        console.log(err)
+        const error = new Error(err)
+        error.httpStatusCode = 500;
+        return next(error);
+
+        //Another method to handle server side error
+        // res.redirect('/500')
+        // return res.status(500).render('admin/edit-products',
+        // {pageTitle:'Add Products',
+        //   path:'/admin/add-products',
+        //   editing : false,
+        //   hasError: true,
+        //   product: {
+        //     title:title,
+        //     imageUrl: imageUrl,
+        //     price: price,
+        //     description: description
+        // },
+        // errorMessage: "Database Operation failed",
+        // validationErrors: []
+      // })
+        // console.log("error occurs!")
+      })
 }
 
 exports.viewProducts=(req,res,next)=>{
@@ -66,7 +106,11 @@ exports.viewProducts=(req,res,next)=>{
         path: '/admin/products'
       });
     })
-    .catch(err=>console.log(err))
+    .catch(err=>{
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    })
 }
 
 
@@ -92,14 +136,18 @@ exports.getEditProducts=(req,res,next)=>{
         validationErrors: []
       });
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+        const error = new Error(err)
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 }
 
 exports.postEditProducts = (req,res,next)=>{
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedImageUrl = req.body.imageUrl;
+  const image = req.file;
   const updatedDescription = req.body.description;
   const errors = validationResult(req)
   
@@ -111,7 +159,6 @@ exports.postEditProducts = (req,res,next)=>{
       hasError: true,
       product: {
         title:updatedTitle,
-        imageUrl:updatedImageUrl,
         price:updatedPrice,
         description:updatedDescription,
         _id: prodId
@@ -129,14 +176,20 @@ exports.postEditProducts = (req,res,next)=>{
       product.title=updatedTitle;
       product.price = updatedPrice;
       product.description = updatedDescription;
-      product.imageUrl = updatedImageUrl;
+      if(image){
+        product.imageUrl = image.path;
+      }
       return product.save()
         .then(result=>{
           console.log("SUCCESSFULLY UPDATED");
           res.redirect('/admin/products');
         })
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 }
 
 exports.postDelete = (req,res,next)=>{
@@ -145,7 +198,11 @@ exports.postDelete = (req,res,next)=>{
     .then(result=>{
       res.redirect('/admin/products');
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 }
 
 
