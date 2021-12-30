@@ -43,14 +43,14 @@ app.use('/images',express.static(path.join(__dirname,'images')));
 const csrfProtection = csrf();
 
 //It's not working need to debug
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'images');
-    },
-    filename: (req, file, cb) => {
-      cb(null, new Date().toISOString() + '-' + file.originalname);
-    }
-  });
+// const fileStorage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//       cb(null, './images');
+//     },
+//     filename: (req, file, cb) => {
+//       cb(null, new Date().toISOString() + '-' + file.originalname);
+//     }
+//   });
   
   const fileFilter = (req, file, cb) => {
     if (
@@ -63,7 +63,7 @@ const fileStorage = multer.diskStorage({
       cb(null, false);
     }
   };
-
+//storage: fileStorage
 app.use(bodyParser.urlencoded({extended :true}));
 app.use(
     multer({ dest: 'images', fileFilter: fileFilter }).single('image')

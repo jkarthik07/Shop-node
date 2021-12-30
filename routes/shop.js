@@ -14,8 +14,12 @@ router.post('/cart',isAuth,shop.postCart);
 router.post('/cart-delete-item',isAuth,shop.postCartDelete);
 
 router.get('/orders',isAuth,shop.orders);
-router.post('/orders',isAuth,shop.postOrders)
-// router.get('/checkout',shop.checkout);
+// router.post('/orders',isAuth,shop.postOrders)
+router.get('/checkout',isAuth,shop.checkout);
+router.get('/checkout/success',shop.checkoutSuccess)
+router.get('/checkout/cancel',shop.checkout)
+
+//Router to get invoice(pdf) 
 router.get('/orders/:orderId',isAuth,shop.getInvoice)
 
 module.exports = router;

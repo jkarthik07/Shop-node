@@ -18,16 +18,14 @@
                             <img src="/<%=p.imageUrl%>" alt="<%=p.title%>">
                         </div>
                         <div class="card__content">
-                            <h2 class="product__price">$<%=p.price%></h2>
+                            <h2 class="product__price">₹<%=p.price%></h2>
                             <p class="product__description"><%=p.description%></p>
                         </div>
                         <div class="card__actions">
                             <a href="/admin/edit-products/<%=p._id%>?edit=true" class="btn">Edit</a>
-                            <form  action="/admin/delete-product" method="post">
-                                <input type="hidden" value="<%=p._id%>" name="productId">
-                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                                <button class="btn" type="submit">Delete</button>
-                            </form>
+                            <input type="hidden" value="<%=p._id%>" name="productId">
+                            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                            <button class="btn" type="button" onclick="delProd(this)">Delete</button>
                         </div>
                     </article>
                 <% }) %>
@@ -37,3 +35,5 @@
         <% } %>
     </main>
 <%-include('../partials/footer.ejs')%>
+
+<script src="/js/admin.js "></script>

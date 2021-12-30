@@ -22,10 +22,11 @@
             </ul>
             <hr>
             <div class="centered">
-                <form action="/orders" method="post">
+                <!-- <form action="/orders" method="post">
                     <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                     <button class="btn" type="submit" >Order Now!</button>
-                </form>
+                </form> -->
+                <a href="/checkout" class="btn">Order Now</a>
             </div>
         <%}else{%>
             <h1>Not Yet Added</h1>

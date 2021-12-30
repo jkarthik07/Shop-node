@@ -1,6 +1,7 @@
 const Product = require('../models/product')
 const {validationResult} = require('express-validator/check')
 const mongoose = require('mongoose')
+const fileHelper = require('../util/file')
 
 exports.getProducts=(req,res,next)=>{
     res.render('admin/edit-products',
@@ -177,6 +178,7 @@ exports.postEditProducts = (req,res,next)=>{
       product.price = updatedPrice;
       product.description = updatedDescription;
       if(image){
+        fileHelper.deleteFile(product.imageUrl)
         product.imageUrl = image.path;
       }
       return product.save()
@@ -192,17 +194,45 @@ exports.postEditProducts = (req,res,next)=>{
     });
 }
 
-exports.postDelete = (req,res,next)=>{
-  const proId = req.body.productId;
-  Product.deleteOne({_id: proId, userId:req.user._id})
-    .then(result=>{
-      res.redirect('/admin/products');
+//Products can be deleted normally
+
+// exports.postDelete = (req,res,next)=>{
+//   const proId = req.body.productId;
+//   Product.findById(proId)
+//     .then(product=>{
+//       if(!product){
+//         return next(new Error('Product not found'));
+//       }
+//       fileHelper.deleteFile(product.imageUrl)
+//       return Product.deleteOne({_id: proId, userId:req.user._id})
+//     })
+//     .then(result=>{
+//       res.redirect('/admin/products');
+//     })
+//     .catch(err=>{
+//       const error = new Error(err)
+//       error.httpStatusCode = 500;
+//       return next(error);
+//     });
+// }
+
+//Product deleted asynchronously without page reloading
+exports.deleteProduct = (req,res,next)=>{
+  const proId = req.params.productId;
+  Product.findById(proId)
+    .then(product=>{
+      if(!product){
+        return next(new Error('Product not found'));
+      }
+      fileHelper.deleteFile(product.imageUrl)
+      return Product.deleteOne({_id: proId, userId:req.user._id})
+    })
+    .then(()=>{
+      console.log("Product deleted successfully")
+      res.status(200).json({message: 'Product deleted Successfully'})
     })
     .catch(err=>{
-      const error = new Error(err)
-      error.httpStatusCode = 500;
-      return next(error);
+      res.status(500).json({message:'Deleting Product Failed'})
     });
 }
-
 

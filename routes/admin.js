@@ -34,6 +34,9 @@ router.post('/edit-products',[
         .trim()
     ],
     isAuth,addProds.postEditProducts);
-router.post('/delete-product',isAuth,addProds.postDelete);                                                     
+// router.post('/delete-product',isAuth,addProds.postDelete);
+
+//Product deleted asynchronously without page reloading
+router.delete('/product/:productId',isAuth,addProds.deleteProduct); 
 
 exports.routes = router;
