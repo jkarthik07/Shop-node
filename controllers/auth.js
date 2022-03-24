@@ -6,28 +6,13 @@ const nodemailer = require('nodemailer')
 const { validationResult } = require('express-validator/check')//To validate the use input
 
 const User = require('../models/user')
-
-// const transporter = nodemailer.createTransport({
-//     service: 'SendinBlue', // no need to set host or port etc.
-//     auth: {
-//         user: 'jkarthik0703@gmail.com',
-//         pass: ''
-//     }
-// });
-// NQCM7RZBBRMIHGBU - Mailgun authenticate code
  
 const transporter = nodemailer.createTransport({
-    // auth: {
-    //     api_key: "af27c9c54ff2706ec2ecf7e72b546200-adf6de59-3dc230ee",
-    //     domain: "sandbox81ceec4f4aaa4bddb4505a73e8386921.mailgun.org",
-    //     url: "https://api.mailgun.net"
-    // }
     host: 'smtp.gmail.com',
     port: 587,
-    // Secure:	STARTTLS,
     auth: {
-        user: 'jdaniles940@gmail.com',
-        pass: 'JDaniles@07'
+        user: '',
+        pass: ''
     }
 })
 
