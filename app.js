@@ -28,7 +28,7 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
-const MONGO_URI = 'mongodb+srv://admin-jk:Jk0727@cluster0.kcslm.mongodb.net/shop1'
+const MONGO_URI = 'mongodb+srv://MONGO_CLOUD_LINK'
 //To store session in mongoDb
 const store = new mongoStore({
     uri: MONGO_URI,
