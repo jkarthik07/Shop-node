@@ -7,7 +7,7 @@ const path = require('path')
 const PDFDoc = require('pdfkit') //use to generate invoice pdf
 
 //Third party server to make payment
-const stripe = require('stripe')('sk_test_51KCI10SEfxAe4sHVOeplmaYZCg4fiHrtGOhMHG40sJXNMhUm4PPNWA5VD6Ayd1FGzIIy2ZcgE6rvcdybfknGRaTF00Ei2R6QTM') 
+const stripe = require('stripe')(STRIPE_PRIVATE_KEY) 
 
 let totalItems;
 const ITEMS_PER_PAGE = 2
